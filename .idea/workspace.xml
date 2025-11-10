@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0156ba51-4d7f-4118-8287-83e131cc1166" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/.bundle/config" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/.eslintrc.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/.prettierrc.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/.watchmanconfig" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/App.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/Gemfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/__tests__/App.test.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/build.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/debug.keystore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/proguard-rules.pro" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/src/main/java/com/pentiachatapp/MainActivity.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/src/main/java/com/pentiachatapp/MainApplication.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/src/main/res/drawable/rn_edit_text_material.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/src/main/res/mipmap-hdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/src/main/res/mipmap-mdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/app/src/main/res/values/styles.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/build.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/gradle.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/gradlew" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/gradlew.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/android/settings.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/app.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/babel.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/ios/.xcode.env" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/ios/PentiaChatApp.xcodeproj/project.pbxproj" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/ios/PentiaChatApp.xcodeproj/xcshareddata/xcschemes/PentiaChatApp.xcscheme" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/ios/PentiaChatApp/AppDelegate.swift" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/ios/PentiaChatApp/Images.xcassets/AppIcon.appiconset/Contents.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/ios/PentiaChatApp/Images.xcassets/Contents.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/ios/PentiaChatApp/Info.plist" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/ios/PentiaChatApp/LaunchScreen.storyboard" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/ios/PentiaChatApp/PrivacyInfo.xcprivacy" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/ios/Podfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/jest.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/metro.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PentiaChatApp/tsconfig.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 2
+}]]></component>
+  <component name="ProjectId" id="35HeQXq0XWglz57hegLj82XevNq" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/weeblord/Git/Pentia_chatapp_opgave/PentiaChatApp"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0156ba51-4d7f-4118-8287-83e131cc1166" name="Changes" comment="" />
+      <created>1762771409174</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1762771409174</updated>
+    </task>
+    <servers />
+  </component>
+</project>
