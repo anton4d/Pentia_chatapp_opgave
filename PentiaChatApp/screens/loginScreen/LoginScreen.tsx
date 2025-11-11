@@ -1,23 +1,69 @@
 import { NewAppScreen } from '@react-native/new-app-screen';
 import BootSplash from "react-native-bootsplash";
-import { StatusBar, StyleSheet, useColorScheme, View,Text } from 'react-native';
+import {  Button, StyleSheet, useColorScheme, View,Text } from 'react-native';
 import { useEffect } from "react";
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import { GoogleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
+GoogleSignin.configure({
+  webClientId: '948816102637-m3j3j1md8uickbb62822vk7mee69a17j.apps.googleusercontent.com',
+});
+async function onGoogleButtonPress() {BootSplash.hide({ fade: true });
+  try {
+      await GoogleSignin.hasPlayServices();
+      const signInResult = await GoogleSignin.signIn();
+
+
+      const idToken = signInResult.idToken ?? signInResult.data?.idToken;
+      if (!idToken) throw new Error('No ID token returned');
+
+
+      const credential = GoogleAuthProvider.credential(idToken);
+      const auth = getAuth(getApp());
+      const userCredential = await signInWithCredential(auth, credential);
+
+      console.log('Firebase signed in as:', userCredential.user.email);
+    } catch (err) {
+      console.error('Sign-In failed:', err);
+    }
+}
+
 
 function LoginScreen() {
   return (
-          <Text>Loginscreen dingy</Text>
+      <>
+          <View style= {styles.HeaderContainer}>
+            <Text style={styles.HeaderText}>Sign in</Text>
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button
+                  title="Google Sign-In"
+                  onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}
+                />
+          </View>
+      </>
   );
 }
 
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  HeaderContainer: {
+    height: "15%",
+    justifyContent: 'center',
+    padding: 5,
+    marginHorizontal: 8,
+    alignItems: "center",
   },
+    HeaderText: {
+      fontSize: 20,
+      color:"#0000ff",
+    },
+    buttonContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        padding: 5,
+        marginHorizontal: 8,
+    }
 });
 
 export default LoginScreen;

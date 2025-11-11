@@ -28,8 +28,6 @@ function App() {
       setUser(user);
       setInitializing(false);
     });
-
-    // Ensure splash is visible at least 1 seconds
     const timer = setTimeout(() => setSplashDone(true), 1000);
 
     return () => {
@@ -67,16 +65,14 @@ function AppContent(props: AppProps) {
 
   if (!props.UserAuth) {
       return (
-        <View>
           <LoginScreen/>
-        </View>
+
       );
     }
 
     return (
-      <View>
         <MainScreen/>
-      </View>
+
     );
 }
 

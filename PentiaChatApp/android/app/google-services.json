@@ -14,15 +14,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "948816102637-gigr7tokkicf4lcv0dhos85lamd2lck0.apps.googleusercontent.com",
+          "client_id": "948816102637-a53icv6dbohfp8i3pql7j6coftu6g4p8.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.pentiachatapp",
-            "certificate_hash": "5b13fb9eef53b7112c30c5aa1dbf00a4f777ce55"
+            "certificate_hash": "b01311dd850d43f7163902e442b12d0e4635838b"
           }
         },
         {
-          "client_id": "948816102637-m3j3j1md8uickbb62822vk7mee69a17j.apps.googleusercontent.com",
+          "client_id": "948816102637-evq2t8i7k2evv3pgtj2esmisu414e80c.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -35,7 +35,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "948816102637-m3j3j1md8uickbb62822vk7mee69a17j.apps.googleusercontent.com",
+              "client_id": "948816102637-evq2t8i7k2evv3pgtj2esmisu414e80c.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
