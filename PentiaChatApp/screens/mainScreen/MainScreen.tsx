@@ -1,23 +1,31 @@
-import { NewAppScreen } from '@react-native/new-app-screen';
-import BootSplash from "react-native-bootsplash";
-import { StatusBar, StyleSheet, useColorScheme, View,Text } from 'react-native';
-import { useEffect } from "react";
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import React, { useState } from 'react';
+import { View, Button, Text } from 'react-native';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { getAuth, signOut } from '@react-native-firebase/auth';
 
 function MainScreen() {
-  return (
-      <Text>Mainscreen</Text>
-  );
+ const [message, setMessage] = useState('');
+
+   const handleSignOut = async () => {
+     try {
+       // Sign out from Firebase
+       const auth = getAuth();
+       await signOut(auth);
+       setMessage('✅ Successfully signed out');
+     } catch (err) {
+       console.error('Sign out error:', err);
+       setMessage('❌ Sign out failed');
+     }
+   };
+
+   return (
+     <View style={{ padding: 20 }}>
+       <Button title="Sign Out" onPress={handleSignOut} />
+       {message ? <Text style={{ marginTop: 10 }}>{message}</Text> : null}
+     </View>
+   );
 }
 
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default MainScreen;

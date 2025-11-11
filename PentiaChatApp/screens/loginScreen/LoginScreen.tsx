@@ -6,7 +6,7 @@ import { GoogleAuthProvider, getAuth, signInWithCredential } from '@react-native
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 GoogleSignin.configure({
-  webClientId: '948816102637-m3j3j1md8uickbb62822vk7mee69a17j.apps.googleusercontent.com',
+  webClientId: '948816102637-evq2t8i7k2evv3pgtj2esmisu414e80c.apps.googleusercontent.com',
 });
 async function onGoogleButtonPress() {BootSplash.hide({ fade: true });
   try {
@@ -19,7 +19,7 @@ async function onGoogleButtonPress() {BootSplash.hide({ fade: true });
 
 
       const credential = GoogleAuthProvider.credential(idToken);
-      const auth = getAuth(getApp());
+      const auth = getAuth();
       const userCredential = await signInWithCredential(auth, credential);
 
       console.log('Firebase signed in as:', userCredential.user.email);
