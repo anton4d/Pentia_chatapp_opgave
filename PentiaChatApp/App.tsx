@@ -6,35 +6,78 @@
  */
 
 import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View,Text } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import BootSplash from "react-native-bootsplash";
+import { StatusBar, StyleSheet, useColorScheme, View,Text} from 'react-native';
+import { useState,useEffect,useRef } from "react";
+import { SafeAreaProvider,  useSafeAreaInsets} from 'react-native-safe-area-context';
+import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
+import LoginScreen from "./screens/loginScreen/LoginScreen"
+import MainScreen from "./screens/mainScreen/MainScreen"
+import AnimatedSplash from "./components/animatedSplash/AnimatedSplash"
+
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
+  const [user, setUser] = useState();
+  const [initializing, setInitializing] = useState(true);
+  const [splashDone, setSplashDone] = useState(false);
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setInitializing(false);
+    });
+
+    // Ensure splash is visible at least 1 seconds
+    const timer = setTimeout(() => setSplashDone(true), 1000);
+
+    return () => {
+      unsubscribe();
+      clearTimeout(timer);
+    };
+  }, []);
+
+  if (initializing || !splashDone) {
+    // Hide native splash immediately when React mounts, then show animated splash
+    BootSplash.hide({ fade: true });
+    return <AnimatedSplash />;
+  }
 
   return (
-    <SafeAreaProvider>
+    <>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <Text>Sometext</Text>
-      <AppContent />
-    </SafeAreaProvider>
+      <SafeAreaProvider
+        style={{
+          flex: 1,
+          paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+        }}
+      >
+        <AppContent UserAuth={user} />
+      </SafeAreaProvider>
+    </>
   );
 }
 
-function AppContent() {
+type AppProps = {
+  UserAuth: user;
+};
+function AppContent(props: AppProps) {
   const safeAreaInsets = useSafeAreaInsets();
 
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
+  if (!props.UserAuth) {
+      return (
+        <View>
+          <LoginScreen/>
+        </View>
+      );
+    }
+
+    return (
+      <View>
+        <MainScreen/>
+      </View>
+    );
 }
 
 const styles = StyleSheet.create({
