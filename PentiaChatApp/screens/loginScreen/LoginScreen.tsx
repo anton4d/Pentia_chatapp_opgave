@@ -34,40 +34,20 @@ async function onGoogleButtonPress() {BootSplash.hide({ fade: true });
 // facebook client token 1152499560362881|79841b29ca3033e4842a30d1d9881f0c
 async function onFacebookButtonPress() {
     try {
-      // 1️⃣ Request login with proper permissions
-      const result = await LoginManager.logInWithReadPermissions(['public_profile', 'email']);
+      const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
       if (result.isCancelled) throw 'User cancelled the login process';
 
-      // 2️⃣ Get the Facebook access token
+
       const data = await AccessToken.getCurrentAccessToken();
       if (!data) throw 'Something went wrong obtaining access token';
 
       const accessToken = data.accessToken;
 
-      // 3️⃣ Sign in to Firebase
+   
       const facebookCredential = FacebookAuthProvider.credential(accessToken);
       const userCredential = await signInWithCredential(getAuth(), facebookCredential);
       const user = userCredential.user;
       console.log('Firebase signed in as:', user.email);
-
-      // 4️⃣ Get the real Facebook ID from Firebase user data
-      const facebookProfile = user.providerData.find(p => p.providerId === 'facebook.com');
-      const facebookId = facebookProfile?.uid;
-
-      // 5️⃣ Fetch the current Facebook picture directly
-      const response = await fetch(
-        `https://graph.facebook.com/${facebookId}?fields=picture.type(large)&access_token=${accessToken}`
-      );
-      const profile = await response.json();
-      const newPhotoURL = profile.picture?.data?.url;
-
-      console.log('Fetched Facebook photo URL:', newPhotoURL);
-
-      // 6️⃣ Update Firebase user photo with the fresh URL
-      if (newPhotoURL) {
-        await updateProfile(user, { photoURL: newPhotoURL });
-        console.log('Firebase photo updated successfully');
-      }
 
     } catch (err) {
       console.error('Facebook Sign-In failed:', err);

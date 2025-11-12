@@ -7,7 +7,7 @@
 
 import { NewAppScreen } from '@react-native/new-app-screen';
 import BootSplash from "react-native-bootsplash";
-import { StatusBar, StyleSheet, useColorScheme, View,Text} from 'react-native';
+import { StatusBar, StyleSheet, useColorScheme, View,Text,Image} from 'react-native';
 import { useState,useEffect,useRef } from "react";
 import { SafeAreaProvider,  useSafeAreaInsets} from 'react-native-safe-area-context';
 import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
@@ -84,7 +84,10 @@ function AppContent(props: AppProps) {
     }
 
     return (
+        <>
         <MainScreen/>
+        <View><Image source={{uri: props.UserAuth.photoURL,}} style={{width: 200, height: 200}} /></View>
+        </>
 
     );
 }
