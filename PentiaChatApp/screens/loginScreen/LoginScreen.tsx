@@ -2,12 +2,14 @@ import { NewAppScreen } from '@react-native/new-app-screen';
 import BootSplash from "react-native-bootsplash";
 import {  Button, StyleSheet, useColorScheme, View,Text } from 'react-native';
 import { useEffect } from "react";
-import { GoogleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+import { FacebookAuthProvider, GoogleAuthProvider, getAuth, signInWithCredential, updateProfile } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 
 GoogleSignin.configure({
   webClientId: '948816102637-evq2t8i7k2evv3pgtj2esmisu414e80c.apps.googleusercontent.com',
 });
+
 async function onGoogleButtonPress() {BootSplash.hide({ fade: true });
   try {
       await GoogleSignin.hasPlayServices();
@@ -27,6 +29,50 @@ async function onGoogleButtonPress() {BootSplash.hide({ fade: true });
       console.error('Sign-In failed:', err);
     }
 }
+// facebook client token 79841b29ca3033e4842a30d1d9881f0c
+// facebook ap idd 1152499560362881
+// facebook client token 1152499560362881|79841b29ca3033e4842a30d1d9881f0c
+async function onFacebookButtonPress() {
+    try {
+      // 1️⃣ Request login with proper permissions
+      const result = await LoginManager.logInWithReadPermissions(['public_profile', 'email']);
+      if (result.isCancelled) throw 'User cancelled the login process';
+
+      // 2️⃣ Get the Facebook access token
+      const data = await AccessToken.getCurrentAccessToken();
+      if (!data) throw 'Something went wrong obtaining access token';
+
+      const accessToken = data.accessToken;
+
+      // 3️⃣ Sign in to Firebase
+      const facebookCredential = FacebookAuthProvider.credential(accessToken);
+      const userCredential = await signInWithCredential(getAuth(), facebookCredential);
+      const user = userCredential.user;
+      console.log('Firebase signed in as:', user.email);
+
+      // 4️⃣ Get the real Facebook ID from Firebase user data
+      const facebookProfile = user.providerData.find(p => p.providerId === 'facebook.com');
+      const facebookId = facebookProfile?.uid;
+
+      // 5️⃣ Fetch the current Facebook picture directly
+      const response = await fetch(
+        `https://graph.facebook.com/${facebookId}?fields=picture.type(large)&access_token=${accessToken}`
+      );
+      const profile = await response.json();
+      const newPhotoURL = profile.picture?.data?.url;
+
+      console.log('Fetched Facebook photo URL:', newPhotoURL);
+
+      // 6️⃣ Update Firebase user photo with the fresh URL
+      if (newPhotoURL) {
+        await updateProfile(user, { photoURL: newPhotoURL });
+        console.log('Firebase photo updated successfully');
+      }
+
+    } catch (err) {
+      console.error('Facebook Sign-In failed:', err);
+    }
+}
 
 
 function LoginScreen() {
@@ -39,6 +85,10 @@ function LoginScreen() {
             <Button
                   title="Google Sign-In"
                   onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}
+                />
+             <Button
+                  title="Facebook Sign-In"
+                  onPress={() => onFacebookButtonPress().then(() => console.log('Signed in with Facebook!'))}
                 />
           </View>
       </>

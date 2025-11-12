@@ -18,16 +18,29 @@ import AnimatedSplash from "./components/animatedSplash/AnimatedSplash"
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
-  const [user, setUser] = useState();
-  const [initializing, setInitializing] = useState(true);
-  const [splashDone, setSplashDone] = useState(false);
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [initializing, setInitializing] = useState<boolean>(true);
+  const [splashDone, setSplashDone] = useState<boolean>(false);
 
   useEffect(() => {
     const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setInitializing(false);
-    });
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
+          setUser(firebaseUser);
+          setInitializing(false);
+
+          if (firebaseUser) {
+            console.log('User ID:', firebaseUser.uid);
+            console.log('Name:', firebaseUser.displayName);
+            console.log('Email:', firebaseUser.email);
+            console.log('Photo:', firebaseUser.photoURL);
+            console.log(
+              'Provider(s):',
+              firebaseUser.providerData.map((p) => p.providerId)
+            );
+          } else {
+            console.log('No user signed in.');
+          }
+        });
     const timer = setTimeout(() => setSplashDone(true), 1000);
 
     return () => {
@@ -58,7 +71,7 @@ function App() {
 }
 
 type AppProps = {
-  UserAuth: user;
+  UserAuth: FirebaseUser | null;
 };
 function AppContent(props: AppProps) {
   const safeAreaInsets = useSafeAreaInsets();

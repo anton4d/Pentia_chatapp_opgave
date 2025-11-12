@@ -11,6 +11,7 @@ function MainScreen() {
        // Sign out from Firebase
        const auth = getAuth();
        await signOut(auth);
+       await GoogleSignin.signOut();
        setMessage('✅ Successfully signed out');
      } catch (err) {
        console.error('Sign out error:', err);
