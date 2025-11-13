@@ -6,7 +6,7 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnable
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 import android.os.Bundle
 import com.zoontek.rnbootsplash.RNBootSplash
-
+import com.swmansion.rnscreens.fragment.restoration.RNScreensFragmentFactory
 class MainActivity : ReactActivity() {
 
   /**
@@ -20,6 +20,7 @@ class MainActivity : ReactActivity() {
    * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
    */
   override fun onCreate(savedInstanceState: Bundle?) {
+      supportFragmentManager.fragmentFactory = RNScreensFragmentFactory()
       RNBootSplash.init(this, R.style.BootTheme)
       super.onCreate(savedInstanceState)
   }

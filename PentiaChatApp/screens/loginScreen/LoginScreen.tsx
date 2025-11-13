@@ -1,6 +1,6 @@
 import { NewAppScreen } from '@react-native/new-app-screen';
 import BootSplash from "react-native-bootsplash";
-import {  Button, StyleSheet, useColorScheme, View,Text } from 'react-native';
+import {  Button, StyleSheet, useColorScheme, View,Text,  Alert } from 'react-native';
 import { useEffect } from "react";
 import { FacebookAuthProvider, GoogleAuthProvider, getAuth, signInWithCredential, updateProfile } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
@@ -9,6 +9,9 @@ import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 GoogleSignin.configure({
   webClientId: '948816102637-evq2t8i7k2evv3pgtj2esmisu414e80c.apps.googleusercontent.com',
 });
+export const showAlert = (title, message) => {
+  Alert.alert(title, message, [{ text: 'OK' }], { cancelable: true });
+};
 
 async function onGoogleButtonPress() {BootSplash.hide({ fade: true });
   try {
@@ -27,11 +30,10 @@ async function onGoogleButtonPress() {BootSplash.hide({ fade: true });
       console.log('Firebase signed in as:', userCredential.user.email);
     } catch (err) {
       console.error('Sign-In failed:', err);
+      showAlert('Google Sign-In Failed', err.message ?? String(err));
     }
 }
-// facebook client token 79841b29ca3033e4842a30d1d9881f0c
-// facebook ap idd 1152499560362881
-// facebook client token 1152499560362881|79841b29ca3033e4842a30d1d9881f0c
+
 async function onFacebookButtonPress() {
     try {
       const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
@@ -43,7 +45,7 @@ async function onFacebookButtonPress() {
 
       const accessToken = data.accessToken;
 
-   
+
       const facebookCredential = FacebookAuthProvider.credential(accessToken);
       const userCredential = await signInWithCredential(getAuth(), facebookCredential);
       const user = userCredential.user;
@@ -51,6 +53,7 @@ async function onFacebookButtonPress() {
 
     } catch (err) {
       console.error('Facebook Sign-In failed:', err);
+      showAlert('Facebook Sign-In Failed', err.message ?? String(err));
     }
 }
 

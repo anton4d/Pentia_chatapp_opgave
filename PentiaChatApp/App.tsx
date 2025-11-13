@@ -11,9 +11,17 @@ import { StatusBar, StyleSheet, useColorScheme, View,Text,Image} from 'react-nat
 import { useState,useEffect,useRef } from "react";
 import { SafeAreaProvider,  useSafeAreaInsets} from 'react-native-safe-area-context';
 import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { HeaderButton } from '@react-navigation/elements';
+import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
+import { Drawer } from 'react-native-drawer-layout';
+
 import LoginScreen from "./screens/loginScreen/LoginScreen"
 import MainScreen from "./screens/mainScreen/MainScreen"
+import ChatRoomScreen from "./screens/chatRoomScreen/ChatRoomScreen"
 import AnimatedSplash from "./components/animatedSplash/AnimatedSplash"
+import SignOut from "./components/SignOutComponnet"
 
 
 function App() {
@@ -50,7 +58,6 @@ function App() {
   }, []);
 
   if (initializing || !splashDone) {
-    // Hide native splash immediately when React mounts, then show animated splash
     BootSplash.hide({ fade: true });
     return <AnimatedSplash />;
   }
@@ -59,10 +66,6 @@ function App() {
     <>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <SafeAreaProvider
-        style={{
-          flex: 1,
-          paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-        }}
       >
         <AppContent UserAuth={user} />
       </SafeAreaProvider>
@@ -73,23 +76,70 @@ function App() {
 type AppProps = {
   UserAuth: FirebaseUser | null;
 };
+const Stack = createNativeStackNavigator();
+
 function AppContent(props: AppProps) {
-  const safeAreaInsets = useSafeAreaInsets();
+  const isSignedIn = !!props.UserAuth;
+  const [open, setOpen] = useState(false);
+    useEffect(() => {
+        if (!props.UserAuth) {
+          setOpen(false);
+        }
+      }, [props.UserAuth]);
 
-  if (!props.UserAuth) {
-      return (
-          <LoginScreen/>
+  return (
+    <NavigationContainer>
+      {isSignedIn ? (
+        <Drawer
+          open={open}
+          onOpen={() => setOpen(true)}
+          onClose={() => setOpen(false)}
+          renderDrawerContent={() => (
+              <View style={{
+                  flex: 1,
+                  alignItems: "center",
+                  paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+                            }}>
+                <Image
+                  source={{uri: props.UserAuth.photoURL}}
+                  style={{width: 80, height: 80}}
+                />
+              <Text>{props.UserAuth.displayName}</Text>
+              <Text>{props.UserAuth.email}</Text>
+            <SignOut />
+            </View>
+          )}
+        >
+          <Stack.Navigator
+            initialRouteName="Chat rooms"
+            screenOptions={{
+              headerRight: () => (
+                <HeaderButton
+                  accessibilityLabel="Toggle drawer"
+                  onPress={() => setOpen((prev) => !prev)}
+                >
+                  <MaterialDesignIcons name="menu" size={24} color="#000" />
+                </HeaderButton>
+              ),
+            }}
+          >
 
-      );
-    }
+             <Stack.Screen
+               name="ChatRoom"
+               children={(stackProps) => <ChatRoomScreen {...stackProps} UserAuth={props.UserAuth} />}
+             />
+             <Stack.Screen
+               name="Chat rooms"
+               children={(stackProps) => <MainScreen {...stackProps} UserAuth={props.UserAuth} />}
 
-    return (
-        <>
-        <MainScreen/>
-        <View><Image source={{uri: props.UserAuth.photoURL,}} style={{width: 200, height: 200}} /></View>
-        </>
-
-    );
+             />
+          </Stack.Navigator>
+        </Drawer>
+      ) : (
+        <LoginScreen />
+      )}
+    </NavigationContainer>
+  );
 }
 
 const styles = StyleSheet.create({
