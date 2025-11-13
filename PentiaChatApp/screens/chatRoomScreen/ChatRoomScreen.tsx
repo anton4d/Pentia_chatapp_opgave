@@ -11,25 +11,25 @@ import {
   Image,
 } from 'react-native';
 import { DB } from '../../components/db';
+import { StorageManager } from '../../components/storageManager';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { v4 as uuidv4 } from 'uuid';
+
+
 
 export default function ChatRoomScreen({ navigation, route, UserAuth }) {
   const { room } = route.params;
-
-
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [loadingOlder, setLoadingOlder] = useState(false);
   const flatListRef = useRef();
 
+    const uploadImage = async (localUri, UserAuth) => {
+      const filename = `${UserAuth.uid}_${Date.now()}.jpg`;
+      const url = await StorageManager.uploadFile(localUri, filename);
+      return url;
+    };
 
-  const loadMessages = async (olderThan = null) => {
-    const msgs = await DB.fetchMessages(room.id, 50, olderThan);
-    if (olderThan) {
-      setMessages(prev => [...msgs, ...prev]);
-    } else {
-      setMessages(msgs);
-    }
-  };
 
   useEffect(() => {
     navigation.setOptions({ title: room.name });
@@ -57,20 +57,35 @@ export default function ChatRoomScreen({ navigation, route, UserAuth }) {
     if (!newMessage.trim()) return;
     await DB.sendMessage(room.id, newMessage, UserAuth);
     setNewMessage('');
-    await loadMessages();
-    setTimeout(() => scrollToBottom(), 100);
+    setTimeout(() => scrollToBottom(), 50);
   };
 
   const scrollToBottom = () => {
-    flatListRef.current?.scrollToEnd({ animated: true });
+    flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
   };
 
   const loadOlderMessages = async () => {
     if (loadingOlder || messages.length === 0) return;
     setLoadingOlder(true);
-    const oldestTimestamp = messages[0].timestamp;
-    await loadMessages(oldestTimestamp);
-    setLoadingOlder(false);
+
+    try {
+      const oldestTimestamp = messages[0].timestamp;
+      const olderMsgs = await DB.fetchMessages(room.id, 50, oldestTimestamp);
+
+      if (olderMsgs.length > 0) {
+        setMessages(prev => {
+          // Remove any messages that are already in state
+          const newOlder = olderMsgs.filter(
+            om => !prev.some(m => m.id === om.id)
+          );
+          return [...newOlder, ...prev];
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingOlder(false);
+    }
   };
 
   const renderMessageItem = ({ item }) => {
@@ -96,6 +111,13 @@ export default function ChatRoomScreen({ navigation, route, UserAuth }) {
             <Text style={styles.senderName}>{item.senderName}</Text>
           )}
           <Text style={styles.messageText}>{item.text}</Text>
+          {item.imageUrl && (
+            <Image
+              source={{ uri: item.imageUrl }}
+              style={{ width: 200, height: 200, borderRadius: 10, marginTop: 5 }}
+            />
+          )}
+
           <Text style={styles.timestamp}>
             {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </Text>
@@ -111,23 +133,40 @@ export default function ChatRoomScreen({ navigation, route, UserAuth }) {
       keyboardVerticalOffset={90}
     >
       <View style={{ flex: 1 }}>
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          keyExtractor={item => item.id}
-          renderItem={renderMessageItem}
-          contentContainerStyle={{ paddingVertical: 10 }}
-          onLayout={scrollToBottom}
-          onEndReachedThreshold={0.1}
-          onEndReached={loadOlderMessages}
-        />
+       <FlatList
+         ref={flatListRef}
+         data={[...messages].reverse()} // oldest → newest
+         inverted
+         renderItem={renderMessageItem}
+         keyExtractor={item => item.id}
+         onEndReached={loadOlderMessages}
+         onEndReachedThreshold={0.1}
+       />
 
         <View style={styles.inputContainer}>
+          <TouchableOpacity
+            onPress={async () => {
+              const result = await launchImageLibrary({ mediaType: 'photo' });
+              if (result.assets && result.assets.length > 0) {
+                const localUri = result.assets[0].uri;
+                const imageUrl = await uploadImage(localUri, UserAuth);
+                await DB.sendMessage(room.id, '', UserAuth, imageUrl);
+              }
+            }}
+            style={{ justifyContent: 'center', paddingHorizontal: 8 }}
+          >
+            <Text style={{ fontSize: 24 }}>📎</Text>
+          </TouchableOpacity>
+
           <TextInput
             style={styles.input}
             placeholder="Type a message..."
             value={newMessage}
             onChangeText={setNewMessage}
+            onSubmitEditing={sendMessage}
+            blurOnSubmit={false}
+            returnKeyType="send"
+            multiline={false}
           />
           <TouchableOpacity onPress={sendMessage} style={styles.sendButton}>
             <Text style={styles.sendButtonText}>Send</Text>
