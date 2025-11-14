@@ -12,6 +12,7 @@ import {
   onChildRemoved,
   off,
   update,
+  set,
 } from '@react-native-firebase/database';
 
 // URL for the Firebase Realtime Database
@@ -45,24 +46,38 @@ interface ChatRoom {
 export const DB = {
   /**
    * Fetch all chat rooms from the database
-   * @returns array of chat rooms with id, lastMessageTimestamp, etc.
+   * @returns Promise<ChatRoom[]> array of chat rooms with id, lastMessageTimestamp, etc.
    */
-  async fetchChatRooms() {
-    // Get a snapshot of the /chatrooms node
+  async fetchChatRooms(): Promise<ChatRoom[]> {
     const snapshot = await get(ref(db, '/chatrooms'));
     const data = snapshot.val();
     if (!data) return [];
 
-    // Convert the object to an array with id included
     const roomsArray = Object.keys(data).map(key => ({
       id: key,
       ...data[key],
     }));
 
-    // Sort by lastMessageTimestamp descending
     roomsArray.sort((a, b) => (b.lastMessageTimestamp || 0) - (a.lastMessageTimestamp || 0));
 
     return roomsArray;
+  },
+
+  /**
+   * Fast fetch a single chat room by ID
+   * @param roomId string ID of the chat room
+   * @returns Promise<ChatRoom | null> ChatRoom object or null if not found
+   */
+  async getRoom(roomId: string): Promise<ChatRoom | null> {
+    try {
+      const snapshot = await get(ref(db, `/chatrooms/${roomId}`));
+      const data = snapshot.val();
+      if (!data) return null;
+      return { id: roomId, ...data };
+    } catch (err) {
+      console.error('Failed to fetch room', err);
+      return null;
+    }
   },
 
   /**
@@ -70,17 +85,15 @@ export const DB = {
    * @param roomId string ID of the chat room
    * @param limit number max number of messages to fetch (default 50)
    * @param endTimestamp number fetch messages older than this timestamp (optional)
-   * @returns array of messages with id, text, timestamp, sender info
+   * @returns Promise<Message[]> array of messages with id, text, timestamp, sender info
    */
   async fetchMessages(roomId: string, limit = 50, endTimestamp: number | null = null): Promise<Message[]> {
-    // Base query: order messages by timestamp, limit to last `limit` messages
     let messagesRef = query(
       ref(db, `/messages/${roomId}`),
       orderByChild('timestamp'),
       limitToLast(limit)
     );
 
-    // If an endTimestamp is provided, fetch messages older than that
     if (endTimestamp) {
       messagesRef = query(
         ref(db, `/messages/${roomId}`),
@@ -90,13 +103,11 @@ export const DB = {
       );
     }
 
-    // Execute the query and get data
     const snapshot = await get(messagesRef);
     const data = snapshot.val();
     if (!data) return [];
 
-    // Convert object to array with id included
-    const messagesArray= Object.keys(data).map(key => ({
+    const messagesArray = Object.keys(data).map(key => ({
       id: key,
       text: data[key].text,
       timestamp: data[key].timestamp,
@@ -104,6 +115,7 @@ export const DB = {
       senderName: data[key].senderName,
       senderPhotoURL: data[key].senderPhotoURL,
     }));
+
     messagesArray.sort((a, b) => a.timestamp - b.timestamp);
 
     return messagesArray;
@@ -113,12 +125,11 @@ export const DB = {
    * Send a message to a chat room
    * @param roomId string ID of the chat room
    * @param text string message text
-   * @param User object containing user info (uid, displayName, photoURL)
+   * @param user User object containing user info (uid, displayName, photoURL)
    * @param imageUrl string optional URL of image to include
    */
   async sendMessage(roomId: string, text: string, user: User, imageUrl: string | null = null): Promise<void> {
     const timestamp = Date.now();
-    // Push new message to /messages/<roomId>
     await push(ref(db, `/messages/${roomId}`), {
       text: text || '',
       imageUrl,
@@ -128,8 +139,90 @@ export const DB = {
       senderPhotoURL: user.photoURL,
     });
 
-    // Update lastMessageTimestamp in the chat room
     await update(ref(db, `/chatrooms/${roomId}`), { lastMessageTimestamp: timestamp });
+  },
+
+  /**
+   * Create a user in the database if they do not already exist
+   * @param user User object containing uid, displayName, photoURL
+   */
+  async createUserIfNotExists(user: User): Promise<void> {
+    if (!user?.uid) {
+      console.warn('No UID provided for creating user');
+      return;
+    }
+    const userRef = ref(db, `/users/${user.uid}`);
+    try {
+      const snapshot = await get(userRef);
+      if (!snapshot.exists()) {
+        await set(userRef, {
+          displayName: user.displayName || 'Unknown',
+          photoURL: user.photoURL || null,
+          createdAt: Date.now(),
+          rooms: {},
+        });
+        console.log(`User ${user.uid} created successfully`);
+      } else {
+        console.log(`User ${user.uid} already exists`);
+      }
+    } catch (err) {
+      console.error('Failed to create user:', err);
+    }
+  },
+
+  /**
+   * Get the notification setting for a user in a specific chat room
+   * @param userId string UID of the user
+   * @param roomId string ID of the chat room
+   * @returns Promise<boolean> true if notifications are enabled, false otherwise
+   */
+  async getRoomNotificationSetting(userId: string, roomId: string): Promise<boolean> {
+    try {
+      const snapshot = await get(ref(db, `/users/${userId}/rooms/${roomId}/notificationsEnabled`));
+      return snapshot.exists() ? snapshot.val() === true : false;
+    } catch (err) {
+      console.error("Failed to load notification status:", err);
+      return false;
+    }
+  },
+
+  /**
+   * Mark that a user has sent their first message in a room
+   * @param user User object
+   * @param roomId string ID of the chat room
+   * @returns Promise<boolean> true if this was the first message, false otherwise
+   */
+  async markFirstMessageInRoom(user: User, roomId: string): Promise<boolean> {
+    const userRoomRef = ref(db, `/users/${user.uid}/rooms/${roomId}`);
+    const snapshot = await get(userRoomRef);
+    const data = snapshot.val();
+
+    if (!data?.hasSentMessage) {
+      await update(userRoomRef, { hasSentMessage: true });
+      return true;
+    }
+    return false;
+  },
+
+  /**
+   * Set whether a user wants notifications for a specific room
+   * @param userId string UID of the user
+   * @param roomId string ID of the chat room
+   * @param enabled boolean true to enable, false to disable
+   */
+  async setRoomNotifications(userId: string, roomId: string, enabled: boolean): Promise<void> {
+    if (!userId || !roomId) {
+      console.warn('Missing userId or roomId for setting notifications');
+      return;
+    }
+
+    const userRoomRef = ref(db, `/users/${userId}/rooms/${roomId}`);
+    try {
+      await update(userRoomRef, { notificationsEnabled: enabled });
+      console.log(`Notifications for user ${userId} in room ${roomId} set to ${enabled}`);
+    } catch (err) {
+      console.error('Failed to update notifications:', err);
+    }
   },
 
   /**
@@ -146,31 +239,26 @@ export const DB = {
     onMessageChanged?: (msg: Message) => void,
     onMessageRemoved?: (msgId: string) => void
   ): () => void {
-    // Query the last 50 messages ordered by timestamp
     const messagesRef = query(
       ref(db, `/messages/${roomId}`),
       orderByChild('timestamp'),
       limitToLast(50)
     );
 
-    // Listen for new messages
     const added = onChildAdded(messagesRef, snapshot => {
       const msg = { id: snapshot.key, ...snapshot.val() };
       onMessageAdded && onMessageAdded(msg);
     });
 
-    // Listen for changed messages
     const changed = onChildChanged(messagesRef, snapshot => {
       const msg = { id: snapshot.key, ...snapshot.val() };
       onMessageChanged && onMessageChanged(msg);
     });
 
-    // Listen for removed messages
     const removed = onChildRemoved(messagesRef, snapshot => {
       onMessageRemoved && onMessageRemoved(snapshot.key!);
     });
 
-    // Return unsubscribe function
     return () => {
       added();
       changed();

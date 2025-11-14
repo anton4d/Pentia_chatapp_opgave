@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "948816102637",
+    "firebase_url": "https://pentiaopgavechatapp-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "pentiaopgavechatapp",
     "storage_bucket": "pentiaopgavechatapp.firebasestorage.app"
   },
@@ -28,7 +29,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyASgKObuwbzxJwe5Mh1uP4CqG0s5gXtl_E"
+          "current_key": "AIzaSyDpOfO5MKUDBgegsJKn_3b8lORIHSFK1BU"
         }
       ],
       "services": {
