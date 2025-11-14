@@ -26,6 +26,7 @@
 
 ## Video  
 The video should showcase what the app can do.  
+You can watch it [here](https://drive.google.com/file/d/1gvb8dbkL70_j6-uaWv3tAyeZ7kWs9sw_/view?usp=drive_link).
 
 ## Verdict  
 I am not satisfied with what I have made. I want to change all of this, but there is no more time.  
